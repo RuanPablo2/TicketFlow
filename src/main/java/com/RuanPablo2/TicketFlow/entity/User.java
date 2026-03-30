@@ -1,5 +1,6 @@
 package com.RuanPablo2.TicketFlow.entity;
 
+import com.RuanPablo2.TicketFlow.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 

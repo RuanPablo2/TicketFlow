@@ -1,5 +1,8 @@
 package com.RuanPablo2.TicketFlow.entity;
 
+import com.RuanPablo2.TicketFlow.entity.enums.TicketCategory;
+import com.RuanPablo2.TicketFlow.entity.enums.TicketPriority;
+import com.RuanPablo2.TicketFlow.entity.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
