@@ -5,6 +5,8 @@ import com.RuanPablo2.TicketFlow.entity.Ticket;
 import com.RuanPablo2.TicketFlow.entity.User;
 import com.RuanPablo2.TicketFlow.entity.enums.TicketPriority;
 import com.RuanPablo2.TicketFlow.entity.enums.TicketStatus;
+import com.RuanPablo2.TicketFlow.exceptions.ErrorCode;
+import com.RuanPablo2.TicketFlow.exceptions.ResourceNotFoundException;
 import com.RuanPablo2.TicketFlow.repository.TicketRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +43,9 @@ public class TicketService {
 
     public Ticket findById(Long id) {
         return ticketRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ticket not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Ticket not found with ID: " + id,
+                        ErrorCode.RESOURCE_NOT_FOUND));
     }
 
     @Transactional
