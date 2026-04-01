@@ -3,10 +3,13 @@ package com.RuanPablo2.TicketFlow.service;
 import com.RuanPablo2.TicketFlow.dtos.request.TicketRequestDTO;
 import com.RuanPablo2.TicketFlow.entity.Ticket;
 import com.RuanPablo2.TicketFlow.entity.User;
+import com.RuanPablo2.TicketFlow.entity.enums.Role;
 import com.RuanPablo2.TicketFlow.entity.enums.TicketPriority;
 import com.RuanPablo2.TicketFlow.entity.enums.TicketStatus;
+import com.RuanPablo2.TicketFlow.exceptions.BusinessRuleException;
 import com.RuanPablo2.TicketFlow.exceptions.ErrorCode;
 import com.RuanPablo2.TicketFlow.exceptions.ResourceNotFoundException;
+import com.RuanPablo2.TicketFlow.exceptions.UnauthorizedAccessException;
 import com.RuanPablo2.TicketFlow.repository.TicketRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +37,6 @@ public class TicketService {
         ticket.setDescription(requestDTO.description());
         ticket.setCategory(requestDTO.category());
         ticket.setPriority(TicketPriority.LOW);
-
         ticket.setStatus(TicketStatus.OPEN);
         ticket.setClient(client);
 
@@ -48,10 +50,38 @@ public class TicketService {
                         ErrorCode.RESOURCE_NOT_FOUND));
     }
 
+    public Ticket findByIdSecure(Long id, Long requesterId) {
+        Ticket ticket = findById(id);
+        User requester = userService.findById(requesterId);
+
+        if (requester.getRole() == Role.CLIENT && !ticket.getClient().getId().equals(requester.getId())) {
+            throw new UnauthorizedAccessException(
+                    "You do not have permission to access the data for this call.",
+                    ErrorCode.UNAUTHORIZED_ACCESS
+            );
+        }
+
+        return ticket;
+    }
+
     @Transactional
     public Ticket assignTicket(Long ticketId, Long supportId) {
         Ticket ticket = findById(ticketId);
         User supportUser = userService.findById(supportId);
+
+        if (supportUser.getRole() == Role.CLIENT) {
+            throw new BusinessRuleException(
+                    "Only support staff can be assigned to resolve a support ticket.",
+                    ErrorCode.BUSINESS_RULE_VIOLATION
+            );
+        }
+
+        if (ticket.getStatus() == TicketStatus.RESOLVED) {
+            throw new BusinessRuleException(
+                    "It is not possible to assign support to a ticket that has already been closed.",
+                    ErrorCode.BUSINESS_RULE_VIOLATION
+            );
+        }
 
         ticket.setAssignedSupport(supportUser);
         ticket.setStatus(TicketStatus.IN_PROGRESS);
@@ -60,8 +90,24 @@ public class TicketService {
     }
 
     @Transactional
-    public Ticket updateTicketStatus(Long ticketId, TicketStatus newStatus) {
+    public Ticket updateTicketStatus(Long ticketId, TicketStatus newStatus, Long requesterId) {
         Ticket ticket = findById(ticketId);
+        User requester = userService.findById(requesterId);
+
+        if (requester.getRole() == Role.CLIENT && !ticket.getClient().getId().equals(requester.getId())) {
+            throw new UnauthorizedAccessException(
+                    "You do not have permission to change the status of this ticket.",
+                    ErrorCode.UNAUTHORIZED_ACCESS
+            );
+        }
+
+        if (ticket.getStatus() == TicketStatus.RESOLVED && newStatus != TicketStatus.OPEN) {
+            throw new BusinessRuleException(
+                    "The call is now closed. It can only be changed again if it is reopened.",
+                    ErrorCode.BUSINESS_RULE_VIOLATION
+            );
+        }
+
         ticket.setStatus(newStatus);
 
         if (newStatus == TicketStatus.RESOLVED) {
@@ -73,11 +119,13 @@ public class TicketService {
         return ticketRepository.save(ticket);
     }
 
-    public List<Ticket> findAllTickets() {
-        return ticketRepository.findAll();
-    }
+    public List<Ticket> findAllTicketsSecure(Long requesterId) {
+        User requester = userService.findById(requesterId);
 
-    public List<Ticket> findTicketsByClient(Long clientId) {
-        return ticketRepository.findAllByClientId(clientId);
+        if (requester.getRole() == Role.CLIENT) {
+            return ticketRepository.findAllByClientId(requesterId);
+        }
+
+        return ticketRepository.findAll();
     }
 }

@@ -3,12 +3,13 @@ package com.RuanPablo2.TicketFlow.controller;
 import com.RuanPablo2.TicketFlow.dtos.request.MessageRequestDTO;
 import com.RuanPablo2.TicketFlow.dtos.response.MessageResponseDTO;
 import com.RuanPablo2.TicketFlow.entity.Message;
-import com.RuanPablo2.TicketFlow.entity.enums.Role;
+import com.RuanPablo2.TicketFlow.entity.User;
 import com.RuanPablo2.TicketFlow.mappers.MessageMapper;
 import com.RuanPablo2.TicketFlow.service.MessageService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,19 +30,19 @@ public class MessageController {
     @PostMapping
     public ResponseEntity<MessageResponseDTO> addMessage(
             @PathVariable Long ticketId,
-            @RequestHeader("User-Id") Long senderId,
+            @AuthenticationPrincipal User loggedUser,
             @Valid @RequestBody MessageRequestDTO requestDTO) {
 
-        Message createdMessage = messageService.addMessage(ticketId, senderId, requestDTO);
+        Message createdMessage = messageService.addMessage(ticketId, loggedUser.getId(), requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(messageMapper.toResponseDTO(createdMessage));
     }
 
     @GetMapping
     public ResponseEntity<List<MessageResponseDTO>> getMessages(
             @PathVariable Long ticketId,
-            @RequestHeader("Requester-Role") Role requesterRole) {
+            @AuthenticationPrincipal User loggedUser) {
 
-        List<MessageResponseDTO> messages = messageService.getMessagesByTicket(ticketId, requesterRole)
+        List<MessageResponseDTO> messages = messageService.getMessagesByTicket(ticketId, loggedUser.getId())
                 .stream()
                 .map(messageMapper::toResponseDTO)
                 .collect(Collectors.toList());
