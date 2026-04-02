@@ -40,6 +40,14 @@ public class TicketService {
         ticket.setStatus(TicketStatus.OPEN);
         ticket.setClient(client);
 
+        long openTickets = ticketRepository.countByClientIdAndStatusNot(clientId, TicketStatus.RESOLVED);
+        if (openTickets >= 3) {
+            throw new BusinessRuleException(
+                    "You have reached the limit of open tickets. Please wait for support to resolve your current requests.",
+                    ErrorCode.BUSINESS_RULE_VIOLATION
+            );
+        }
+
         return ticketRepository.save(ticket);
     }
 
@@ -94,16 +102,23 @@ public class TicketService {
         Ticket ticket = findById(ticketId);
         User requester = userService.findById(requesterId);
 
-        if (requester.getRole() == Role.CLIENT && !ticket.getClient().getId().equals(requester.getId())) {
+        if (requester.getRole() == Role.CLIENT) {
             throw new UnauthorizedAccessException(
-                    "You do not have permission to change the status of this ticket.",
+                    "Only support agents can change the status of a ticket.",
                     ErrorCode.UNAUTHORIZED_ACCESS
             );
         }
 
         if (ticket.getStatus() == TicketStatus.RESOLVED && newStatus != TicketStatus.OPEN) {
             throw new BusinessRuleException(
-                    "The call is now closed. It can only be changed again if it is reopened.",
+                    "The ticket is now closed. It can only be modified again if it is reopened (OPEN).",
+                    ErrorCode.BUSINESS_RULE_VIOLATION
+            );
+        }
+
+        if (newStatus == TicketStatus.RESOLVED && ticket.getAssignedSupport() == null) {
+            throw new BusinessRuleException(
+                    "A ticket must be assigned to a support agent before it can be resolved.",
                     ErrorCode.BUSINESS_RULE_VIOLATION
             );
         }
@@ -127,5 +142,28 @@ public class TicketService {
         }
 
         return ticketRepository.findAll();
+    }
+
+    @Transactional
+    public Ticket updateTicketPriority(Long ticketId, TicketPriority newPriority, Long requesterId) {
+        Ticket ticket = findById(ticketId);
+        User requester = userService.findById(requesterId);
+
+        if (requester.getRole() == Role.CLIENT) {
+            throw new UnauthorizedAccessException(
+                    "Only support agents can perform ticket triage and change priority.",
+                    ErrorCode.UNAUTHORIZED_ACCESS
+            );
+        }
+
+        if (ticket.getStatus() == TicketStatus.RESOLVED) {
+            throw new BusinessRuleException(
+                    "It is not possible to change the priority of a closed ticket.",
+                    ErrorCode.BUSINESS_RULE_VIOLATION
+            );
+        }
+
+        ticket.setPriority(newPriority);
+        return ticketRepository.save(ticket);
     }
 }

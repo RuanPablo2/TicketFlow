@@ -4,6 +4,7 @@ import com.RuanPablo2.TicketFlow.dtos.request.TicketRequestDTO;
 import com.RuanPablo2.TicketFlow.dtos.response.TicketResponseDTO;
 import com.RuanPablo2.TicketFlow.entity.Ticket;
 import com.RuanPablo2.TicketFlow.entity.User;
+import com.RuanPablo2.TicketFlow.entity.enums.TicketPriority;
 import com.RuanPablo2.TicketFlow.entity.enums.TicketStatus;
 import com.RuanPablo2.TicketFlow.mappers.TicketMapper;
 import com.RuanPablo2.TicketFlow.service.TicketService;
@@ -64,6 +65,16 @@ public class TicketController {
             @AuthenticationPrincipal User loggedUser) {
 
         Ticket updatedTicket = ticketService.assignTicket(id, loggedUser.getId());
+        return ResponseEntity.ok(ticketMapper.toResponseDTO(updatedTicket));
+    }
+
+    @PutMapping("/{id}/priority")
+    public ResponseEntity<TicketResponseDTO> updatePriority(
+            @PathVariable Long id,
+            @RequestParam TicketPriority priority,
+            @AuthenticationPrincipal User loggedUser) {
+
+        Ticket updatedTicket = ticketService.updateTicketPriority(id, priority, loggedUser.getId());
         return ResponseEntity.ok(ticketMapper.toResponseDTO(updatedTicket));
     }
 
