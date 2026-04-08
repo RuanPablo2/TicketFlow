@@ -6,10 +6,12 @@ import com.RuanPablo2.TicketFlow.entity.User;
 import com.RuanPablo2.TicketFlow.entity.enums.Role;
 import com.RuanPablo2.TicketFlow.entity.enums.TicketPriority;
 import com.RuanPablo2.TicketFlow.entity.enums.TicketStatus;
+import com.RuanPablo2.TicketFlow.events.TicketCreatedEvent;
 import com.RuanPablo2.TicketFlow.exceptions.BusinessRuleException;
 import com.RuanPablo2.TicketFlow.exceptions.ErrorCode;
 import com.RuanPablo2.TicketFlow.exceptions.ResourceNotFoundException;
 import com.RuanPablo2.TicketFlow.exceptions.UnauthorizedAccessException;
+import com.RuanPablo2.TicketFlow.publisher.TicketMessagePublisher;
 import com.RuanPablo2.TicketFlow.repository.TicketRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +24,12 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final UserService userService;
+    private final TicketMessagePublisher messagePublisher;
 
-    public TicketService(TicketRepository ticketRepository, UserService userService) {
+    public TicketService(TicketRepository ticketRepository, UserService userService, TicketMessagePublisher messagePublisher) {
         this.ticketRepository = ticketRepository;
         this.userService = userService;
+        this.messagePublisher = messagePublisher;
     }
 
     @Transactional
@@ -48,7 +52,16 @@ public class TicketService {
             );
         }
 
-        return ticketRepository.save(ticket);
+        Ticket savedTicket = ticketRepository.save(ticket);
+
+        TicketCreatedEvent event = new TicketCreatedEvent(
+                savedTicket.getId(),
+                savedTicket.getTitle(),
+                client.getName()
+        );
+        messagePublisher.sendTicketCreatedEvent(event);
+
+        return savedTicket;
     }
 
     public Ticket findById(Long id) {
