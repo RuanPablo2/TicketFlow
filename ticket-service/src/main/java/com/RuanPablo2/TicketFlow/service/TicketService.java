@@ -85,17 +85,20 @@ public class TicketService {
         return ticket;
     }
 
+    public List<Ticket> findAllTicketsSecure(Long requesterId) {
+        User requester = userService.findById(requesterId);
+
+        if (requester.getRole() == Role.CLIENT) {
+            return ticketRepository.findAllByClientId(requesterId);
+        }
+
+        return ticketRepository.findAll();
+    }
+
     @Transactional
     public Ticket assignTicket(Long ticketId, Long supportId) {
         Ticket ticket = findById(ticketId);
         User supportUser = userService.findById(supportId);
-
-        if (supportUser.getRole() == Role.CLIENT) {
-            throw new BusinessRuleException(
-                    "Only support staff can be assigned to resolve a support ticket.",
-                    ErrorCode.BUSINESS_RULE_VIOLATION
-            );
-        }
 
         if (ticket.getStatus() == TicketStatus.RESOLVED) {
             throw new BusinessRuleException(
@@ -111,16 +114,8 @@ public class TicketService {
     }
 
     @Transactional
-    public Ticket updateTicketStatus(Long ticketId, TicketStatus newStatus, Long requesterId) {
+    public Ticket updateTicketStatus(Long ticketId, TicketStatus newStatus) { // <- Limpo!
         Ticket ticket = findById(ticketId);
-        User requester = userService.findById(requesterId);
-
-        if (requester.getRole() == Role.CLIENT) {
-            throw new UnauthorizedAccessException(
-                    "Only support agents can change the status of a ticket.",
-                    ErrorCode.UNAUTHORIZED_ACCESS
-            );
-        }
 
         if (ticket.getStatus() == TicketStatus.RESOLVED && newStatus != TicketStatus.OPEN) {
             throw new BusinessRuleException(
@@ -147,27 +142,9 @@ public class TicketService {
         return ticketRepository.save(ticket);
     }
 
-    public List<Ticket> findAllTicketsSecure(Long requesterId) {
-        User requester = userService.findById(requesterId);
-
-        if (requester.getRole() == Role.CLIENT) {
-            return ticketRepository.findAllByClientId(requesterId);
-        }
-
-        return ticketRepository.findAll();
-    }
-
     @Transactional
-    public Ticket updateTicketPriority(Long ticketId, TicketPriority newPriority, Long requesterId) {
+    public Ticket updateTicketPriority(Long ticketId, TicketPriority newPriority) { // <- Limpo!
         Ticket ticket = findById(ticketId);
-        User requester = userService.findById(requesterId);
-
-        if (requester.getRole() == Role.CLIENT) {
-            throw new UnauthorizedAccessException(
-                    "Only support agents can perform ticket triage and change priority.",
-                    ErrorCode.UNAUTHORIZED_ACCESS
-            );
-        }
 
         if (ticket.getStatus() == TicketStatus.RESOLVED) {
             throw new BusinessRuleException(

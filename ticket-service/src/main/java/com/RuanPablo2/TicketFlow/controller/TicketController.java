@@ -11,6 +11,7 @@ import com.RuanPablo2.TicketFlow.service.TicketService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,6 +61,7 @@ public class TicketController {
     }
 
     @PutMapping("/{id}/assign")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
     public ResponseEntity<TicketResponseDTO> assignTicket(
             @PathVariable Long id,
             @AuthenticationPrincipal User loggedUser) {
@@ -69,22 +71,22 @@ public class TicketController {
     }
 
     @PutMapping("/{id}/priority")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
     public ResponseEntity<TicketResponseDTO> updatePriority(
             @PathVariable Long id,
-            @RequestParam TicketPriority priority,
-            @AuthenticationPrincipal User loggedUser) {
+            @RequestParam TicketPriority priority) {
 
-        Ticket updatedTicket = ticketService.updateTicketPriority(id, priority, loggedUser.getId());
+        Ticket updatedTicket = ticketService.updateTicketPriority(id, priority);
         return ResponseEntity.ok(ticketMapper.toResponseDTO(updatedTicket));
     }
 
     @PutMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
     public ResponseEntity<TicketResponseDTO> updateStatus(
             @PathVariable Long id,
-            @RequestParam TicketStatus status,
-            @AuthenticationPrincipal User loggedUser) {
+            @RequestParam TicketStatus status) {
 
-        Ticket updatedTicket = ticketService.updateTicketStatus(id, status, loggedUser.getId());
+        Ticket updatedTicket = ticketService.updateTicketStatus(id, status);
         return ResponseEntity.ok(ticketMapper.toResponseDTO(updatedTicket));
     }
 }

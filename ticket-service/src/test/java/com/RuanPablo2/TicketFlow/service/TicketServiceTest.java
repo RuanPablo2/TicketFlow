@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,46 +61,19 @@ class TicketServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw UnauthorizedAccessException when a client tries to change the ticket status")
-    void updateTicketStatus_ShouldThrowException_WhenRequesterIsClient() {
-        Long ticketId = 1L;
-        Long clientId = 5L;
-
-        Ticket ticket = new Ticket();
-        ticket.setId(ticketId);
-
-        User clientUser = new User();
-        clientUser.setId(clientId);
-        clientUser.setRole(Role.CLIENT);
-
-        when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(ticket));
-        when(userService.findById(clientId)).thenReturn(clientUser);
-
-        assertThrows(UnauthorizedAccessException.class, () -> {
-            ticketService.updateTicketStatus(ticketId, TicketStatus.RESOLVED, clientId);
-        });
-    }
-
-    @Test
     @DisplayName("Should throw BusinessRuleException when trying to resolve a ticket without assigned support")
     void updateTicketStatus_ShouldThrowException_WhenResolvingUnassignedTicket() {
         Long ticketId = 1L;
-        Long supportId = 10L;
 
         Ticket ticket = new Ticket();
         ticket.setId(ticketId);
         ticket.setStatus(TicketStatus.OPEN);
         ticket.setAssignedSupport(null);
 
-        User supportUser = new User();
-        supportUser.setId(supportId);
-        supportUser.setRole(Role.SUPPORT);
-
         when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(ticket));
-        when(userService.findById(supportId)).thenReturn(supportUser);
 
         assertThrows(BusinessRuleException.class, () -> {
-            ticketService.updateTicketStatus(ticketId, TicketStatus.RESOLVED, supportId);
+            ticketService.updateTicketStatus(ticketId, TicketStatus.RESOLVED);
         });
     }
 
@@ -119,12 +93,11 @@ class TicketServiceTest {
 
         when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(ticket));
         when(userService.findById(supportId)).thenReturn(supportUser);
-
         when(ticketRepository.save(ticket)).thenReturn(ticket);
 
         Ticket updatedTicket = ticketService.assignTicket(ticketId, supportId);
 
-        org.junit.jupiter.api.Assertions.assertEquals(TicketStatus.IN_PROGRESS, updatedTicket.getStatus());
-        org.junit.jupiter.api.Assertions.assertEquals(supportUser, updatedTicket.getAssignedSupport());
+        assertEquals(TicketStatus.IN_PROGRESS, updatedTicket.getStatus());
+        assertEquals(supportUser, updatedTicket.getAssignedSupport());
     }
 }
