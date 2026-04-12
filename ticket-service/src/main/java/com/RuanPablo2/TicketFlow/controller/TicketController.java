@@ -9,6 +9,10 @@ import com.RuanPablo2.TicketFlow.entity.enums.TicketStatus;
 import com.RuanPablo2.TicketFlow.mappers.TicketMapper;
 import com.RuanPablo2.TicketFlow.service.TicketService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,15 +44,15 @@ public class TicketController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TicketResponseDTO>> getAllTickets(
-            @AuthenticationPrincipal User loggedUser) {
+    public ResponseEntity<Page<TicketResponseDTO>> getAllTickets(
+            @AuthenticationPrincipal User loggedUser,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        List<TicketResponseDTO> tickets = ticketService.findAllTicketsSecure(loggedUser.getId())
-                .stream()
-                .map(ticketMapper::toResponseDTO)
-                .collect(Collectors.toList());
+        Page<Ticket> ticketPage = ticketService.findAllTicketsSecure(loggedUser.getId(), pageable);
 
-        return ResponseEntity.ok(tickets);
+        Page<TicketResponseDTO> responsePage = ticketPage.map(ticketMapper::toResponseDTO);
+
+        return ResponseEntity.ok(responsePage);
     }
 
     @GetMapping("/{id}")
@@ -68,6 +72,18 @@ public class TicketController {
 
         Ticket updatedTicket = ticketService.assignTicket(id, loggedUser.getId());
         return ResponseEntity.ok(ticketMapper.toResponseDTO(updatedTicket));
+    }
+
+    @GetMapping("/my-queue")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
+    public ResponseEntity<Page<TicketResponseDTO>> getMyAssignedTickets(
+            @AuthenticationPrincipal User loggedUser,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Page<Ticket> ticketPage = ticketService.findTicketsBySupport(loggedUser.getId(), pageable);
+        Page<TicketResponseDTO> responsePage = ticketPage.map(ticketMapper::toResponseDTO);
+
+        return ResponseEntity.ok(responsePage);
     }
 
     @PutMapping("/{id}/priority")

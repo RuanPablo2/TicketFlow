@@ -13,6 +13,8 @@ import com.RuanPablo2.TicketFlow.exceptions.ResourceNotFoundException;
 import com.RuanPablo2.TicketFlow.exceptions.UnauthorizedAccessException;
 import com.RuanPablo2.TicketFlow.publisher.TicketMessagePublisher;
 import com.RuanPablo2.TicketFlow.repository.TicketRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,14 +87,14 @@ public class TicketService {
         return ticket;
     }
 
-    public List<Ticket> findAllTicketsSecure(Long requesterId) {
+    public Page<Ticket> findAllTicketsSecure(Long requesterId, Pageable pageable) {
         User requester = userService.findById(requesterId);
 
         if (requester.getRole() == Role.CLIENT) {
-            return ticketRepository.findAllByClientId(requesterId);
+            return ticketRepository.findAllByClientId(requesterId, pageable);
         }
 
-        return ticketRepository.findAll();
+        return ticketRepository.findAll(pageable);
     }
 
     @Transactional
@@ -111,6 +113,10 @@ public class TicketService {
         ticket.setStatus(TicketStatus.IN_PROGRESS);
 
         return ticketRepository.save(ticket);
+    }
+
+    public Page<Ticket> findTicketsBySupport(Long supportId, Pageable pageable) {
+        return ticketRepository.findAllByAssignedSupportId(supportId, pageable);
     }
 
     @Transactional
