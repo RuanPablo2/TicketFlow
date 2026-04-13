@@ -105,4 +105,14 @@ public class TicketController {
         Ticket updatedTicket = ticketService.updateTicketStatus(id, status);
         return ResponseEntity.ok(ticketMapper.toResponseDTO(updatedTicket));
     }
+
+    @PutMapping("/{id}/resume")
+    @PreAuthorize("hasRole('CLIENT')")
+    public ResponseEntity<TicketResponseDTO> resumeTicket(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User loggedUser) {
+
+        Ticket updatedTicket = ticketService.resumeTicket(id, loggedUser.getId());
+        return ResponseEntity.ok(ticketMapper.toResponseDTO(updatedTicket));
+    }
 }

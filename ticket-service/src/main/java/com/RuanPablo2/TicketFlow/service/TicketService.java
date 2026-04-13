@@ -162,4 +162,19 @@ public class TicketService {
         ticket.setPriority(newPriority);
         return ticketRepository.save(ticket);
     }
+
+    @Transactional
+    public Ticket resumeTicket(Long ticketId, Long clientId) {
+        Ticket ticket = findByIdSecure(ticketId, clientId);
+
+        if (ticket.getStatus() != TicketStatus.WAITING_CUSTOMER) {
+            throw new BusinessRuleException(
+                    "You can only resume tickets that are waiting for your response.",
+                    ErrorCode.BUSINESS_RULE_VIOLATION
+            );
+        }
+        ticket.setStatus(TicketStatus.IN_PROGRESS);
+
+        return ticketRepository.save(ticket);
+    }
 }
