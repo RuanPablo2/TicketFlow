@@ -59,7 +59,8 @@ public class TicketService {
         TicketCreatedEvent event = new TicketCreatedEvent(
                 savedTicket.getId(),
                 savedTicket.getTitle(),
-                client.getName()
+                client.getName(),
+                client.getEmail()
         );
         messagePublisher.sendTicketCreatedEvent(event);
 

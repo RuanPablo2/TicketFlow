@@ -1,41 +1,32 @@
 package com.RuanPablo2.notification_service.listener;
 
 import com.RuanPablo2.notification_service.events.TicketCreatedEvent;
+import com.RuanPablo2.notification_service.service.EmailService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TicketNotificationListener {
 
-    @Autowired
-    private JavaMailSender mailSender;
+    private final EmailService emailService;
 
-    @Value("${spring.mail.username}")
-    private String senderEmail;
+    public TicketNotificationListener(EmailService emailService) {
+        this.emailService = emailService;
+    }
 
     @RabbitListener(queues = "ticket.created.queue")
     public void listenTicketCreation(TicketCreatedEvent event) {
-        System.out.println("📬 [NEW NOTIFICATION] Dispatching real email to the client...");
+        System.out.println("📬 [NEW NOTIFICATION] Dispatching HTML email to the client...");
 
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-
-            message.setFrom(senderEmail);
-
-            message.setTo(senderEmail);
-
-            message.setSubject("Ticket Created: " + event.title());
-            message.setText("Hello " + event.clientName() + ",\n\n" +
-                    "Your ticket number #" + event.ticketId() + " has been successfully created in our system!\n" +
-                    "Our team will get in touch with you shortly.\n\n" +
-                    "Best regards,\nTicketFlow Team");
-
-            mailSender.send(message);
-            System.out.println("✅ Email sent successfully!");
+            emailService.sendHtmlEmail(
+                    "ruanpablo2.dev@gmail.com",
+                    "Ticket confirmation #" + event.ticketId(),
+                    event.userName(),
+                    event.title(),
+                    event.ticketId()
+            );
+            System.out.println("✅ HTML Email sent successfully to: " + event.email());
 
         } catch (Exception e) {
             System.err.println("❌ Error sending email: " + e.getMessage());

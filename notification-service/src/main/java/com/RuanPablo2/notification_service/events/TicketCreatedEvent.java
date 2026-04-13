@@ -3,6 +3,6 @@ package com.RuanPablo2.notification_service.events;
 public record TicketCreatedEvent(
         Long ticketId,
         String title,
-        String clientName
-) {
-}
+        String userName,
+        String email
+) {}
