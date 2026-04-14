@@ -6,11 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="cf1f6e98-dd5c-43dc-8519-2400c034b62a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/com/RuanPablo2/notification_service/events/TicketCreatedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/com/RuanPablo2/notification_service/events/TicketCreatedEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/com/RuanPablo2/notification_service/listener/TicketNotificationListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/com/RuanPablo2/notification_service/listener/TicketNotificationListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/events/TicketCreatedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/events/TicketCreatedEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/service/TicketService.java" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/service/TicketService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/controller/MessageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/controller/MessageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/controller/TicketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/controller/TicketController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,22 +36,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Api-Gateway.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Notification-Service.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Ticket-Service.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.api-gateway [clean,compile,-U].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ruanp/Documents/Projetos Java/TicketFlow&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Api-Gateway.executor": "Run",
+    "Application.Notification-Service.executor": "Run",
+    "Application.Ticket-Service.executor": "Run",
+    "Maven.api-gateway [clean,compile,-U].executor": "Run",
+    "Maven.api-gateway [clean].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/ruanp/Documents/Projetos Java/TicketFlow"
   }
-}</component>
+}]]></component>
   <component name="RunAnythingCache">
     <option name="myCommands">
       <command value="mvn clean compile -U" />
+      <command value="mvn clean" />
     </option>
   </component>
   <component name="RunDashboard">
@@ -61,7 +63,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Notification-Service">
+  <component name="RunManager" selected="Application.Api-Gateway">
     <configuration name="Api-Gateway" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="21" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />

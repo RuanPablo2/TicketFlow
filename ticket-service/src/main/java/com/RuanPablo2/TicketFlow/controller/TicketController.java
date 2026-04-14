@@ -8,6 +8,10 @@ import com.RuanPablo2.TicketFlow.entity.enums.TicketPriority;
 import com.RuanPablo2.TicketFlow.entity.enums.TicketStatus;
 import com.RuanPablo2.TicketFlow.mappers.TicketMapper;
 import com.RuanPablo2.TicketFlow.service.TicketService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +23,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/api/tickets")
+@Tag(name = "Tickets", description = "Endpoints para gerenciamento do ciclo de vida dos chamados de suporte")
 public class TicketController {
 
     private final TicketService ticketService;
@@ -35,6 +37,12 @@ public class TicketController {
     }
 
     @PostMapping
+    @Operation(summary = "Abre um novo Ticket", description = "Cria um chamado e dispara um evento assíncrono para notificação por e-mail.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Ticket criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação (ex: campos em branco)"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado: Cliente atingiu o limite de tickets abertos")
+    })
     public ResponseEntity<TicketResponseDTO> createTicket(
             @AuthenticationPrincipal User loggedUser,
             @Valid @RequestBody TicketRequestDTO requestDTO) {
@@ -44,18 +52,25 @@ public class TicketController {
     }
 
     @GetMapping
+    @Operation(summary = "Lista os tickets (Paginado)", description = "Retorna uma lista paginada. Clientes veem apenas os próprios tickets; Suporte/Admin veem a fila global.")
+    @ApiResponse(responseCode = "200", description = "Lista de tickets recuperada com sucesso")
     public ResponseEntity<Page<TicketResponseDTO>> getAllTickets(
             @AuthenticationPrincipal User loggedUser,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         Page<Ticket> ticketPage = ticketService.findAllTicketsSecure(loggedUser.getId(), pageable);
-
         Page<TicketResponseDTO> responsePage = ticketPage.map(ticketMapper::toResponseDTO);
 
         return ResponseEntity.ok(responsePage);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Busca ticket por ID", description = "Retorna os detalhes de um ticket específico. Clientes só podem visualizar os próprios tickets.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ticket encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado: O ticket pertence a outro cliente"),
+            @ApiResponse(responseCode = "404", description = "Ticket não encontrado")
+    })
     public ResponseEntity<TicketResponseDTO> getTicketById(
             @PathVariable Long id,
             @AuthenticationPrincipal User loggedUser) {
@@ -66,6 +81,12 @@ public class TicketController {
 
     @PutMapping("/{id}/assign")
     @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
+    @Operation(summary = "Atribui um ticket a um atendente", description = "O atendente logado assume a responsabilidade pelo ticket. O status muda para IN_PROGRESS.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ticket atribuído com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de regra de negócio (ex: tentar atribuir ticket fechado)"),
+            @ApiResponse(responseCode = "403", description = "Acesso restrito a Suporte e Admin")
+    })
     public ResponseEntity<TicketResponseDTO> assignTicket(
             @PathVariable Long id,
             @AuthenticationPrincipal User loggedUser) {
@@ -76,6 +97,8 @@ public class TicketController {
 
     @GetMapping("/my-queue")
     @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
+    @Operation(summary = "Fila de trabalho do atendente", description = "Retorna de forma paginada os tickets que estão atribuídos ao atendente logado.")
+    @ApiResponse(responseCode = "200", description = "Fila recuperada com sucesso")
     public ResponseEntity<Page<TicketResponseDTO>> getMyAssignedTickets(
             @AuthenticationPrincipal User loggedUser,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -88,6 +111,11 @@ public class TicketController {
 
     @PutMapping("/{id}/priority")
     @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
+    @Operation(summary = "Atualiza a prioridade", description = "Muda a prioridade do ticket (LOW, MEDIUM, HIGH, URGENT). Não é possível alterar a prioridade de tickets resolvidos.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Prioridade atualizada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "O ticket já está fechado")
+    })
     public ResponseEntity<TicketResponseDTO> updatePriority(
             @PathVariable Long id,
             @RequestParam TicketPriority priority) {
@@ -98,6 +126,12 @@ public class TicketController {
 
     @PutMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
+    @Operation(summary = "Atualiza o status", description = "Altera o status do ticket. Se for alterado para RESOLVED, a data de fechamento é registrada.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Status atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Regra violada (ex: fechar ticket sem atendente)"),
+            @ApiResponse(responseCode = "403", description = "Acesso restrito a Suporte e Admin")
+    })
     public ResponseEntity<TicketResponseDTO> updateStatus(
             @PathVariable Long id,
             @RequestParam TicketStatus status) {
@@ -108,6 +142,12 @@ public class TicketController {
 
     @PutMapping("/{id}/resume")
     @PreAuthorize("hasRole('CLIENT')")
+    @Operation(summary = "Retoma um ticket (Apenas Cliente)", description = "Permite que o cliente devolva o ticket para a fila do suporte após fornecer as informações solicitadas.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ticket retomado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "O ticket não está aguardando resposta do cliente"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado: O ticket não pertence a este cliente")
+    })
     public ResponseEntity<TicketResponseDTO> resumeTicket(
             @PathVariable Long id,
             @AuthenticationPrincipal User loggedUser) {
