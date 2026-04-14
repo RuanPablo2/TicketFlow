@@ -1,7 +1,7 @@
 -- Inserting Users (Clients and Support)
-INSERT INTO tb_users (name, email, password, role) VALUES ('John Doe', 'john@client.com', '$2a$10$W7YMyzA/rkHo61lr6u0r8eal8QEsGdm5HC/9jNoOD3qi/20pEjItS', 'CLIENT');
-INSERT INTO tb_users (name, email, password, role) VALUES ('Jane Smith', 'jane@client.com', '$2a$10$W7YMyzA/rkHo61lr6u0r8eal8QEsGdm5HC/9jNoOD3qi/20pEjItS', 'CLIENT');
-INSERT INTO tb_users (name, email, password, role) VALUES ('Tech Guru', 'guru@support.com', '$2a$10$W7YMyzA/rkHo61lr6u0r8eal8QEsGdm5HC/9jNoOD3qi/20pEjItS', 'SUPPORT');
+INSERT INTO tb_users (name, email, password, user_role) VALUES ('John Doe', 'john@client.com', '$2a$10$W7YMyzA/rkHo61lr6u0r8eal8QEsGdm5HC/9jNoOD3qi/20pEjItS', 'CLIENT');
+INSERT INTO tb_users (name, email, password, user_role) VALUES ('Jane Smith', 'jane@client.com', '$2a$10$W7YMyzA/rkHo61lr6u0r8eal8QEsGdm5HC/9jNoOD3qi/20pEjItS', 'CLIENT');
+INSERT INTO tb_users (name, email, password, user_role) VALUES ('Tech Guru', 'guru@support.com', '$2a$10$W7YMyzA/rkHo61lr6u0r8eal8QEsGdm5HC/9jNoOD3qi/20pEjItS', 'SUPPORT');
 
 -- Inserting initial Tickets
 INSERT INTO tb_tickets (title, description, status, priority, category, client_id, created_at, updated_at) VALUES ('System crashing on login', 'Every time I try to login, the screen goes blank.', 'OPEN', 'HIGH', 'BUG', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

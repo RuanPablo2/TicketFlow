@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cf1f6e98-dd5c-43dc-8519-2400c034b62a" name="Changes" comment="" />
+    <list default="true" id="cf1f6e98-dd5c-43dc-8519-2400c034b62a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/com/RuanPablo2/notification_service/listener/TicketNotificationListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/com/RuanPablo2/notification_service/listener/TicketNotificationListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/resources/application-dev.properties" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/resources/application-dev.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/resources/import.sql" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/resources/import.sql" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
