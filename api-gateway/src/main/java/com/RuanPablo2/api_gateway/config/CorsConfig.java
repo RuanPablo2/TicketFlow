@@ -1,4 +1,4 @@
-package com.RuanPablo2.TicketFlow.config;
+package com.RuanPablo2.api_gateway.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
