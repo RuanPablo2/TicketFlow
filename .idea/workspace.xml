@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="cf1f6e98-dd5c-43dc-8519-2400c034b62a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/config/CorsConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/RuanPablo2/api_gateway/config/GatewayConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/RuanPablo2/api_gateway/config/GatewayConfig.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,7 +59,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Api-Gateway">
+  <component name="RunManager" selected="Application.Ticket-Service">
     <configuration name="Api-Gateway" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="21" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -94,9 +92,9 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.Ticket-Service" />
-      <item itemvalue="Application.Notification-Service" />
       <item itemvalue="Application.Api-Gateway" />
+      <item itemvalue="Application.Notification-Service" />
+      <item itemvalue="Application.Ticket-Service" />
     </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
