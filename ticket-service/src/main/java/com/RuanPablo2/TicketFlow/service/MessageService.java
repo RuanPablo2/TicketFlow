@@ -49,6 +49,13 @@ public class MessageService {
             );
         }
 
+        if (requestDTO.internalNote() && sender.getRole() == Role.CLIENT) {
+            throw new UnauthorizedAccessException(
+                    "Clients are not allowed to create internal notes.",
+                    ErrorCode.UNAUTHORIZED_ACCESS
+            );
+        }
+
         Message message = new Message();
         message.setContent(requestDTO.content());
         message.setInternalNote(sender.getRole() == Role.CLIENT ? false : requestDTO.internalNote());
