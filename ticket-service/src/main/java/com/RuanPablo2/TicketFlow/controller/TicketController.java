@@ -1,6 +1,7 @@
 package com.RuanPablo2.TicketFlow.controller;
 
 import com.RuanPablo2.TicketFlow.dtos.request.TicketRequestDTO;
+import com.RuanPablo2.TicketFlow.dtos.response.AgentStatsDTO;
 import com.RuanPablo2.TicketFlow.dtos.response.TicketResponseDTO;
 import com.RuanPablo2.TicketFlow.dtos.response.TicketStatsDTO;
 import com.RuanPablo2.TicketFlow.entity.Ticket;
@@ -23,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/tickets")
@@ -165,5 +168,13 @@ public class TicketController {
 
         TicketStatsDTO stats = ticketService.getTicketStats();
         return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/stats/agents")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Performance da Equipe", description = "Retorna métricas de resolução e carga de trabalho por atendente.")
+    @ApiResponse(responseCode = "200", description = "Métricas recuperadas com sucesso")
+    public ResponseEntity<List<AgentStatsDTO>> getAgentStats() {
+        return ResponseEntity.ok(ticketService.getTopAgentsStats());
     }
 }

@@ -1,6 +1,7 @@
 package com.RuanPablo2.TicketFlow.service;
 
 import com.RuanPablo2.TicketFlow.dtos.request.TicketRequestDTO;
+import com.RuanPablo2.TicketFlow.dtos.response.AgentStatsDTO;
 import com.RuanPablo2.TicketFlow.dtos.response.TicketStatsDTO;
 import com.RuanPablo2.TicketFlow.entity.Ticket;
 import com.RuanPablo2.TicketFlow.entity.User;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TicketService {
@@ -193,5 +196,31 @@ public class TicketService {
         long resolvedCount = ticketRepository.countByStatus(TicketStatus.RESOLVED);
 
         return new TicketStatsDTO(openCount, inProgressCount, waitingCount, resolvedCount);
+    }
+
+    public List<AgentStatsDTO> getTopAgentsStats() {
+        List<Object[]> results = ticketRepository.findAgentPerformanceMetrics(
+                TicketStatus.IN_PROGRESS,
+                TicketStatus.RESOLVED
+        );
+
+        List<AgentStatsDTO> agents = new ArrayList<>();
+
+        for (Object[] row : results) {
+            String name = (String) row[0];
+            long active = ((Number) row[1]).longValue();
+            long resolved = ((Number) row[2]).longValue();
+
+            agents.add(new AgentStatsDTO(
+                    name,
+                    "Support",
+                    active,
+                    resolved
+            ));
+        }
+
+        agents.sort((a, b) -> Long.compare(b.resolvedThisWeek(), a.resolvedThisWeek()));
+
+        return agents;
     }
 }
