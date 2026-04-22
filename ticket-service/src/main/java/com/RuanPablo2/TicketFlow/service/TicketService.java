@@ -103,6 +103,13 @@ public class TicketService {
         Ticket ticket = findById(ticketId);
         User supportUser = userService.findById(supportId);
 
+        if (supportUser.getRole() == Role.ADMIN) {
+            throw new BusinessRuleException(
+                    "Administrators act as managers and cannot be assigned to resolve tickets.",
+                    ErrorCode.BUSINESS_RULE_VIOLATION
+            );
+        }
+
         if (ticket.getStatus() == TicketStatus.RESOLVED) {
             throw new BusinessRuleException(
                     "It is not possible to assign support to a ticket that has already been closed.",
