@@ -13,6 +13,7 @@ public class MessageMapper {
         UserSummaryDTO senderDTO = new UserSummaryDTO(
                 message.getSender().getId(),
                 message.getSender().getName(),
+                message.getSender().getEmail(),
                 message.getSender().getRole()
         );
 

@@ -13,6 +13,7 @@ public class TicketMapper {
         UserSummaryDTO clientDTO = new UserSummaryDTO(
                 ticket.getClient().getId(),
                 ticket.getClient().getName(),
+                ticket.getClient().getEmail(),
                 ticket.getClient().getRole()
         );
 
@@ -21,6 +22,7 @@ public class TicketMapper {
             supportDTO = new UserSummaryDTO(
                     ticket.getAssignedSupport().getId(),
                     ticket.getAssignedSupport().getName(),
+                    ticket.getAssignedSupport().getEmail(),
                     ticket.getAssignedSupport().getRole()
             );
         }

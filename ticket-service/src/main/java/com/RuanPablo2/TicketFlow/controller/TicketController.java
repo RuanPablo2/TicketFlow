@@ -2,6 +2,7 @@ package com.RuanPablo2.TicketFlow.controller;
 
 import com.RuanPablo2.TicketFlow.dtos.request.TicketRequestDTO;
 import com.RuanPablo2.TicketFlow.dtos.response.TicketResponseDTO;
+import com.RuanPablo2.TicketFlow.dtos.response.TicketStatsDTO;
 import com.RuanPablo2.TicketFlow.entity.Ticket;
 import com.RuanPablo2.TicketFlow.entity.User;
 import com.RuanPablo2.TicketFlow.entity.enums.TicketPriority;
@@ -154,5 +155,15 @@ public class TicketController {
 
         Ticket updatedTicket = ticketService.resumeTicket(id, loggedUser.getId());
         return ResponseEntity.ok(ticketMapper.toResponseDTO(updatedTicket));
+    }
+
+    @GetMapping("/stats")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
+    @Operation(summary = "Estatísticas do Dashboard", description = "Retorna a contagem global de chamados agrupados por status para renderização de gráficos.")
+    @ApiResponse(responseCode = "200", description = "Estatísticas recuperadas com sucesso")
+    public ResponseEntity<TicketStatsDTO> getTicketStats() {
+
+        TicketStatsDTO stats = ticketService.getTicketStats();
+        return ResponseEntity.ok(stats);
     }
 }

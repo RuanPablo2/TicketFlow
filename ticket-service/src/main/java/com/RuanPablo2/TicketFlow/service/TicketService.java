@@ -1,6 +1,7 @@
 package com.RuanPablo2.TicketFlow.service;
 
 import com.RuanPablo2.TicketFlow.dtos.request.TicketRequestDTO;
+import com.RuanPablo2.TicketFlow.dtos.response.TicketStatsDTO;
 import com.RuanPablo2.TicketFlow.entity.Ticket;
 import com.RuanPablo2.TicketFlow.entity.User;
 import com.RuanPablo2.TicketFlow.entity.enums.Role;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class TicketService {
@@ -177,5 +177,14 @@ public class TicketService {
         ticket.setStatus(TicketStatus.IN_PROGRESS);
 
         return ticketRepository.save(ticket);
+    }
+
+    public TicketStatsDTO getTicketStats() {
+        long openCount = ticketRepository.countByStatus(TicketStatus.OPEN);
+        long inProgressCount = ticketRepository.countByStatus(TicketStatus.IN_PROGRESS);
+        long waitingCount = ticketRepository.countByStatus(TicketStatus.WAITING_CUSTOMER);
+        long resolvedCount = ticketRepository.countByStatus(TicketStatus.RESOLVED);
+
+        return new TicketStatsDTO(openCount, inProgressCount, waitingCount, resolvedCount);
     }
 }
