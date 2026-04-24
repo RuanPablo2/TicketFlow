@@ -15,7 +15,7 @@ import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFu
 @Configuration
 public class GatewayConfig {
 
-    @Value("${TICKET_SERVICE_URL:http://localhost:8080}")
+    @Value("${TICKET_SERVICE_URL:http://ticketflow-ticket:8080}")
     private String ticketServiceUrl;
 
     @Bean
@@ -24,7 +24,6 @@ public class GatewayConfig {
 
         return route("ticket-service-route")
                 .route(RequestPredicates.path("/**"), http())
-                .before(rewritePath("/(?<segment>.*)", "/api/${segment}"))
                 .before(uri(ticketServiceUrl))
                 .build();
     }
