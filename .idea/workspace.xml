@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="cf1f6e98-dd5c-43dc-8519-2400c034b62a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/resources/application-dev.properties" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/resources/application-dev.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/resources/import.sql" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/resources/import.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/RuanPablo2/api_gateway/config/GatewayConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/RuanPablo2/api_gateway/config/GatewayConfig.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,20 +32,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Api-Gateway.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Notification-Service.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Ticket-Service.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.api-gateway [clean,compile,-U].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.api-gateway [clean].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ruanp/Documents/Projetos Java/TicketFlow&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Api-Gateway.executor": "Run",
+    "Application.Notification-Service.executor": "Run",
+    "Application.Ticket-Service.executor": "Run",
+    "Maven.api-gateway [clean,compile,-U].executor": "Run",
+    "Maven.api-gateway [clean].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/ruanp/Documents/Projetos Java/TicketFlow/notification-service"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ruanp\Documents\Projetos Java\TicketFlow\notification-service" />
+      <recent name="C:\Users\ruanp\Documents\Projetos Java\TicketFlow\api-gateway" />
+    </key>
+  </component>
   <component name="RunAnythingCache">
     <option name="myCommands">
       <command value="mvn clean compile -U" />
@@ -60,7 +65,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Api-Gateway">
+  <component name="RunManager" selected="Application.Ticket-Service">
     <configuration name="Api-Gateway" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="21" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -108,5 +113,8 @@
       <updated>1775622346541</updated>
     </task>
     <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
   </component>
 </project>

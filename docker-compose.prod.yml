@@ -1,0 +1,81 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ticketflow-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ticketflow_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - ticketflow-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: ticketflow-rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
+    networks:
+      - ticketflow-network
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: ticketflow-gateway
+    restart: always
+    ports:
+      - "80:8081"
+    environment:
+      - APP_PROFILE=prod
+      - CORS_ORIGINS=${FRONTEND_URL}
+      - TICKET_SERVICE_URL=http://ticketflow-ticket:8080
+    depends_on:
+      - ticket-service
+    networks:
+      - ticketflow-network
+
+  ticket-service:
+    build: ./ticket-service
+    container_name: ticketflow-ticket
+    restart: always
+    environment:
+      - APP_PROFILE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ticketflow-db:5432/ticketflow_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_RABBITMQ_HOST=ticketflow-rabbitmq
+      - SPRING_RABBITMQ_USERNAME=${RABBIT_USER}
+      - SPRING_RABBITMQ_PASSWORD=${RABBIT_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      - ticketflow-network
+
+  notification-service:
+    build: ./notification-service
+    container_name: ticketflow-notification
+    restart: always
+    environment:
+      - APP_PROFILE=prod
+      - SPRING_RABBITMQ_HOST=ticketflow-rabbitmq
+      - SPRING_RABBITMQ_USERNAME=${RABBIT_USER}
+      - SPRING_RABBITMQ_PASSWORD=${RABBIT_PASSWORD}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+    depends_on:
+      - rabbitmq
+    networks:
+      - ticketflow-network
+
+networks:
+  ticketflow-network:
+    driver: bridge
+
+volumes:
+  pgdata:
