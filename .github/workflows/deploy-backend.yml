@@ -9,6 +9,8 @@ on:
       - "ticket-service/**"
       - "notification-service/**"
       - "docker-compose.prod.yml"
+      - "docker-compose.yml"
+      - "Readme.md"
 
 jobs:
   deploy:
