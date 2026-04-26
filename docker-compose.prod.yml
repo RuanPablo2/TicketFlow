@@ -27,7 +27,7 @@ services:
     container_name: ticketflow-gateway
     restart: always
     ports:
-      - "80:8081"
+      - "8081:8081"
     environment:
       - APP_PROFILE=prod
       - CORS_ORIGINS=${FRONTEND_URL}
