@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="cf1f6e98-dd5c-43dc-8519-2400c034b62a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/RuanPablo2/api_gateway/config/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/RuanPablo2/api_gateway/config/CorsConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/controller/TicketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/ticket-service/src/main/java/com/RuanPablo2/TicketFlow/controller/TicketController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

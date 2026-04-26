@@ -84,7 +84,7 @@ public class TicketController {
     }
 
     @PutMapping("/{id}/assign")
-    @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPPORT')")
     @Operation(summary = "Atribui um ticket a um atendente", description = "O atendente logado assume a responsabilidade pelo ticket. O status muda para IN_PROGRESS.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ticket atribuído com sucesso"),
@@ -100,7 +100,7 @@ public class TicketController {
     }
 
     @GetMapping("/my-queue")
-    @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPPORT')")
     @Operation(summary = "Fila de trabalho do atendente", description = "Retorna de forma paginada os tickets que estão atribuídos ao atendente logado.")
     @ApiResponse(responseCode = "200", description = "Fila recuperada com sucesso")
     public ResponseEntity<Page<TicketResponseDTO>> getMyAssignedTickets(

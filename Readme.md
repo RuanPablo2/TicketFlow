@@ -6,19 +6,36 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?style=for-the-badge&logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker)
 ![JWT](https://img.shields.io/badge/Security-JWT_Auth-black?style=for-the-badge&logo=jsonwebtokens)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions)
+![Oracle Cloud](https://img.shields.io/badge/Cloud-Oracle_OCI-F80000?style=for-the-badge&logo=oracle)
 
 Sistema robusto de gerenciamento de chamados de suporte (Help Desk) construído sob uma **Arquitetura de Microsserviços**. O projeto simula um ambiente corporativo real, utilizando mensageria assíncrona para envio de notificações, roteamento centralizado via API Gateway e segurança granular baseada em níveis de acesso (RBAC).
 
-## 📐 Ecossistema e Arquitetura
+🔗 **Acesse o sistema em Produção:** https://ticketflow-web.netlify.app
+
+## ☁️ Arquitetura de Nuvem e DevOps (Produção)
+
+O TicketFlow foi implantado em um ambiente de produção real, garantindo alta disponibilidade, segurança e deploy automatizado.
+
+- **Infraestrutura em Nuvem:** Hospedado em um servidor Linux (Ubuntu) na **Oracle Cloud Infrastructure (OCI)**.
+- **Orquestração de Contêineres:** Todo o ecossistema (Bancos de dados, Brokers e Microsserviços) roda isolado e orquestrado pelo **Docker Compose** utilizando redes internas (Bridge Network) para comunicação segura.
+- **Proxy Reverso e Segurança:** \* O tráfego de internet é recebido por um servidor **Nginx**, que atua como proxy reverso roteando as requisições para o API Gateway.
+  - Criptografia de ponta a ponta (HTTPS) garantida via certificado SSL/TLS gerado automaticamente pelo **Certbot (Let's Encrypt)**.
+- **Integração e Entrega Contínuas (CI/CD):**
+  - Pipeline automatizado construído com **GitHub Actions**.
+  - A cada _push_ na branch `main`, um _runner_ acessa o servidor remoto via SSH, realiza o pull do código, recompila os artefatos com o Maven, recria as imagens Docker e reinicia os serviços sem a necessidade de intervenção manual.
+
+## 📐 Estrutura dos Microsserviços
 
 A aplicação foi desenhada para ser escalável, resiliente e seguir o padrão de responsabilidade única.
 
 ```text
 📦 ticketflow-ecosystem
- ┣ 📂 api-gateway          # [Porta 8081] Ponto de entrada único. Roteia requisições e oculta as portas internas.
- ┣ 📂 ticket-service       # [Porta 8080] Core da aplicação. Gere JWT, usuários, tickets, regras e banco de dados.
- ┣ 📂 notification-service # [Porta 8082] Consumer assíncrono. Ouve filas do RabbitMQ e dispara e-mails via SMTP.
- ┗ 📜 docker-compose.yml   # Orquestração da infraestrutura (PostgreSQL, RabbitMQ, pgAdmin).
+ ┣ 📂 api-gateway          # Ponto de entrada único. Resolve CORS e roteia requisições dinâmicas.
+ ┣ 📂 ticket-service       # Core da aplicação. Gere JWT, usuários, tickets, regras e banco de dados.
+ ┣ 📂 notification-service # Consumer assíncrono. Ouve filas do RabbitMQ e dispara e-mails.
+ ┣ 📜 docker-compose.yml   # Orquestração do ambiente de desenvolvimento.
+ ┗ 📜 docker-compose.prod.yml # Orquestração otimizada para o ambiente de Produção.
 ```
 
 ## 🛠 Tecnologias e Boas Práticas
@@ -29,7 +46,7 @@ A aplicação foi desenhada para ser escalável, resiliente e seguir o padrão d
 - **Banco de Dados:** PostgreSQL (ORM via Hibernate).
 - **Templates:** Thymeleaf (Renderização dinâmica de e-mails em HTML).
 - **Documentação:** Springdoc OpenAPI (Swagger UI).
-- **Infraestrutura:** Docker & Docker Compose.
+- **Infraestrutura & DevOps**: Docker, Nginx, GitHub Actions, Oracle Cloud.
 
 ---
 
@@ -63,10 +80,12 @@ _Nota: Para rotas protegidas (🔒), envie o Header `Authorization: Bearer <seu_
 | `POST` | `/api/tickets`               | Abre um novo chamado (dispara e-mail assíncrono via RabbitMQ).           | 🔒 Autenticado        |
 | `GET`  | `/api/tickets`               | Lista paginada. Clientes veem os próprios; Staff vê a fila global.       | 🔒 Autenticado        |
 | `GET`  | `/api/tickets/{id}`          | Retorna detalhes de um ticket específico.                                | 🔒 Autenticado        |
-| `GET`  | `/api/tickets/my-queue`      | Retorna a fila de trabalho (tickets atribuídos ao atendente logado).     | 🔒 `SUPPORT`, `ADMIN` |
-| `PUT`  | `/api/tickets/{id}/assign`   | Atendente assume a autoria/responsabilidade pelo ticket.                 | 🔒 `SUPPORT`, `ADMIN` |
+| `GET`  | `/api/tickets/my-queue`      | Retorna a fila de trabalho (tickets atribuídos ao atendente logado).     | 🔒 `SUPPORT`          |
+| `PUT`  | `/api/tickets/{id}/assign`   | Atendente assume a autoria/responsabilidade pelo ticket.                 | 🔒 `SUPPORT`          |
 | `PUT`  | `/api/tickets/{id}/priority` | Atualiza prioridade (`LOW`, `MEDIUM`, `HIGH`, `URGENT`).                 | 🔒 `SUPPORT`, `ADMIN` |
 | `PUT`  | `/api/tickets/{id}/status`   | Atualiza status (`OPEN`, `IN_PROGRESS`, `WAITING_CUSTOMER`, `RESOLVED`). | 🔒 `SUPPORT`, `ADMIN` |
+| `GET`  | `/api/tickets/stats`         | Retorna contagem global de chamados agrupados por status para dashboard. | 🔒 `ADMIN`            |
+| `GET`  | `/api/tickets//stats/agents` | Retorna métricas de resolução e carga de trabalho por atendente.         | 🔒 `ADMIN`            |
 | `PUT`  | `/api/tickets/{id}/resume`   | Cliente devolve o ticket ao suporte (volta para `IN_PROGRESS`).          | 🔒 `CLIENT`           |
 
 ### 💬 Mensagens e Chat (`/api/tickets/{id}/messages`)
@@ -122,36 +141,21 @@ git clone [https://github.com/RuanPablo2/TicketFlow.git](https://github.com/Ruan
 cd TicketFlow
 ```
 
-**2. Configuração de Infraestrutura**
+**2. Configuração de Variáveis (Ambiente)**
 
-Na raiz do projeto, suba os serviços de suporte (Banco de Dados, RabbitMQ e pgAdmin):
+Crie os arquivos .env na raiz do projeto com as credenciais do banco e configurações de SMTP.
 
-```bash
-docker-compose up -d
-```
+**3. Executar via Docker Compose**
 
-- **PostgreSQL:** Porta 5432.
-- **RabbitMQ:** Porta 5672 (Painel em `http://localhost:15672` com guest/guest).
-- **pgAdmin:** Porta 5050 (Acesse com `admin@ticketflow.com` / `admin`).
-
-**3. Configuração de Notificações**
-
-No `notification-service`, configure as variáveis de ambiente para envio de e-mail (SMTP Gmail):
+Para subir todo o ecossistema rapidamente (banco, rabbitMQ e as APIS) na sua máquina, execute:
 
 ```bash
-MAIL_USERNAME=seu-email@gmail.com
-MAIL_PASSWORD=sua-senha-de-app-gmail
+docker compose up -d --build
 ```
 
-**4. Executar os Microsserviços**
+O API Gateway estará disponível em `http://localhost:8081.`
 
-Execute cada um na seguinte ordem:
-
-Ticket Service: `mvn spring-boot:run`
-
-Notification Service: `mvn spring-boot:run`
-
-API Gateway: `mvn spring-boot:run`
+O painel do RabbitMQ estará disponível em `http://localhost:15672` (guest/guest).
 
 ## 👨‍💻 Autor
 
