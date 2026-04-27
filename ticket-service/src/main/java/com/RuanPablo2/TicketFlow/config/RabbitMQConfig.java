@@ -17,6 +17,9 @@ public class RabbitMQConfig {
     public static final String TICKET_EXCHANGE = "ticket.exchange";
     public static final String TICKET_CREATED_ROUTING_KEY = "ticket.created.routingKey";
 
+    public static final String PASSWORD_RESET_QUEUE = "password.reset.queue";
+    public static final String PASSWORD_RESET_ROUTING_KEY = "auth.password.reset";
+
     @Bean
     public Queue ticketCreatedQueue() {
         return new Queue(TICKET_CREATED_QUEUE, true);
@@ -33,6 +36,19 @@ public class RabbitMQConfig {
                 .bind(ticketCreatedQueue)
                 .to(ticketExchange)
                 .with(TICKET_CREATED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue passwordResetQueue() {
+        return new Queue(PASSWORD_RESET_QUEUE, true);
+    }
+
+    @Bean
+    public Binding passwordResetBinding(Queue passwordResetQueue, DirectExchange ticketExchange) {
+        return BindingBuilder
+                .bind(passwordResetQueue)
+                .to(ticketExchange)
+                .with(PASSWORD_RESET_ROUTING_KEY);
     }
 
     @Bean

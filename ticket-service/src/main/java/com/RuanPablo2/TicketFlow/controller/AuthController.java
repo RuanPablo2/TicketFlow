@@ -1,8 +1,6 @@
 package com.RuanPablo2.TicketFlow.controller;
 
-import com.RuanPablo2.TicketFlow.dtos.request.LoginDTO;
-import com.RuanPablo2.TicketFlow.dtos.request.RegisterDTO;
-import com.RuanPablo2.TicketFlow.dtos.request.StaffRegisterDTO;
+import com.RuanPablo2.TicketFlow.dtos.request.*;
 import com.RuanPablo2.TicketFlow.dtos.response.LoginResponseDTO;
 import com.RuanPablo2.TicketFlow.entity.User;
 import com.RuanPablo2.TicketFlow.security.TokenService;
@@ -73,5 +71,31 @@ public class AuthController {
     public ResponseEntity<Void> registerStaff(@RequestBody @Valid StaffRegisterDTO data) {
         authService.registerStaff(data);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/forgot-password")
+    @Operation(summary = "Solicitar recuperação de senha", description = "Gera um token temporário e dispara evento para envio de e-mail via RabbitMQ.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Solicitação processada com sucesso (retorna 200 mesmo se o e-mail não existir por segurança)")
+    })
+    public ResponseEntity<Void> forgotPassword(@RequestBody @Valid ForgotPasswordDTO data) {
+        authService.requestPasswordReset(data.email());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    @Operation(summary = "Redefinir senha", description = "Valida o token temporário JWT e atualiza a senha do usuário.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Senha alterada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Token inválido, expirado ou usuário não encontrado")
+    })
+    public ResponseEntity<Void> resetPassword(@RequestBody @Valid ResetPasswordDTO data) {
+        try {
+            authService.resetPassword(data.token(), data.newPassword());
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

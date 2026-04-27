@@ -40,4 +40,27 @@ public class EmailService {
             throw new RuntimeException("Error sending HTML email", e);
         }
     }
+
+    public void sendPasswordResetEmail(String to, String userName, String token) {
+        try {
+            String resetLink = "https://ticketflow-web.netlify.app/reset-password?token=" + token;
+
+            Context context = new Context();
+            context.setVariable("userName", userName);
+            context.setVariable("resetLink", resetLink);
+
+            String process = templateEngine.process("password-reset-email", context);
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            helper.setSubject("TicketFlow - Password Recovery");
+            helper.setText(process, true);
+            helper.setTo(to);
+
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Error sending HTML email for password reset", e);
+        }
+    }
 }

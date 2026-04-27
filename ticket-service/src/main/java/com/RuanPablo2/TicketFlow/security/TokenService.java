@@ -45,4 +45,31 @@ public class TokenService {
             return null;
         }
     }
+
+    public String generatePasswordResetToken(String email) {
+        return Jwts.builder()
+                .subject(email)
+                .claim("type", "PASSWORD_RESET")
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public String validatePasswordResetToken(String token) {
+        try {
+            var claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            if (!"PASSWORD_RESET".equals(claims.get("type", String.class))) {
+                return null;
+            }
+            return claims.getSubject();
+        } catch (Exception exception) {
+            return null;
+        }
+    }
 }

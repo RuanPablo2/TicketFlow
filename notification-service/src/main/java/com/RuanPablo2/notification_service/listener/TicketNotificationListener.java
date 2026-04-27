@@ -1,5 +1,6 @@
 package com.RuanPablo2.notification_service.listener;
 
+import com.RuanPablo2.notification_service.events.PasswordResetRequestedEvent;
 import com.RuanPablo2.notification_service.events.TicketCreatedEvent;
 import com.RuanPablo2.notification_service.service.EmailService;
 import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -37,6 +38,27 @@ public class TicketNotificationListener {
 
         } catch (Exception e) {
             System.err.println("❌ Error sending email: " + e.getMessage());
+        }
+    }
+
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(value = "password.reset.queue", durable = "true"),
+            exchange = @Exchange(value = "ticket.exchange", type = "direct"),
+            key = "auth.password.reset"
+    ))
+    public void listenPasswordReset(PasswordResetRequestedEvent event) {
+        System.out.println("🔐 [NEW NOTIFICATION] Dispatching Password Reset HTML email...");
+
+        try {
+            emailService.sendPasswordResetEmail(
+                    event.email(),
+                    event.name(),
+                    event.token()
+            );
+            System.out.println("✅ Password Reset Email sent successfully to: " + event.email());
+
+        } catch (Exception e) {
+            System.err.println("❌ Error sending password reset email: " + e.getMessage());
         }
     }
 }
