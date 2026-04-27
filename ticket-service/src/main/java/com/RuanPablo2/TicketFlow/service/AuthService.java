@@ -1,5 +1,6 @@
 package com.RuanPablo2.TicketFlow.service;
 
+import com.RuanPablo2.TicketFlow.config.RabbitMQConfig;
 import com.RuanPablo2.TicketFlow.dtos.request.RegisterDTO;
 import com.RuanPablo2.TicketFlow.dtos.request.StaffRegisterDTO;
 import com.RuanPablo2.TicketFlow.entity.User;
@@ -77,8 +78,8 @@ public class AuthService implements UserDetailsService {
             System.out.println("Sending password reset event to RabbitMQ: " + email);
 
             rabbitTemplate.convertAndSend(
-                    "ticketflow.exchange",
-                    "auth.password.reset",
+                    RabbitMQConfig.TICKET_EXCHANGE,
+                    RabbitMQConfig.PASSWORD_RESET_ROUTING_KEY,
                     event
             );
         }
