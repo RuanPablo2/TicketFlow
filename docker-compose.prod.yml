@@ -7,8 +7,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ticketflow_db
+    ports:
+      - "5433:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ticketflow-pgdata:/var/lib/postgresql/data
     networks:
       - ticketflow-network
 
@@ -16,6 +18,9 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: ticketflow-rabbitmq
     restart: always
+    ports:
+      - "5673:5672"
+      - "15673:15672"
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
@@ -43,6 +48,7 @@ services:
     restart: always
     environment:
       - APP_PROFILE=prod
+      - JWT_SECRET=${JWT_SECRET}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ticketflow-db:5432/ticketflow_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
@@ -78,4 +84,4 @@ networks:
     driver: bridge
 
 volumes:
-  pgdata:
+  ticketflow-pgdata:
