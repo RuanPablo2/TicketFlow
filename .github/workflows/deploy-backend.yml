@@ -31,14 +31,14 @@ jobs:
             echo "📥 Puxando código novo do GitHub..."
             git pull origin main
 
-            echo "🔨 Compilando a API Gateway..."
-            cd api-gateway && chmod +x mvnw && ./mvnw clean package -Dmaven.test.skip=true && cd ..
+            echo "🔨 Compilando a API Gateway (via Docker Maven)..."
+            sudo docker run --rm -v "$PWD/api-gateway":/app -w /app maven:3.9-eclipse-temurin-21 mvn clean package -Dmaven.test.skip=true
 
-            echo "🔨 Compilando o Ticket Service..."
-            cd ticket-service && chmod +x mvnw && ./mvnw clean package -Dmaven.test.skip=true && cd ..
+            echo "🔨 Compilando o Ticket Service (via Docker Maven)..."
+            sudo docker run --rm -v "$PWD/ticket-service":/app -w /app maven:3.9-eclipse-temurin-21 mvn clean package -Dmaven.test.skip=true
 
-            echo "🔨 Compilando o Notification Service..."
-            cd notification-service && chmod +x mvnw && ./mvnw clean package -Dmaven.test.skip=true && cd ..
+            echo "🔨 Compilando o Notification Service (via Docker Maven)..."
+            sudo docker run --rm -v "$PWD/notification-service":/app -w /app maven:3.9-eclipse-temurin-21 mvn clean package -Dmaven.test.skip=true
 
             echo "🐳 Reiniciando os containers Docker..."
             sudo docker compose -f docker-compose.prod.yml up -d --build
