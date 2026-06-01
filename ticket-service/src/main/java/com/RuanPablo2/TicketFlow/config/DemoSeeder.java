@@ -41,24 +41,22 @@ public class DemoSeeder {
 
         System.out.println("🌱 [DEMO SEEDER] Populando ambiente de demonstração com atores e chamados...");
 
-        String defaultPassword = passwordEncoder.encode("123456");
-
         User admin = new User();
         admin.setEmail("admin@ticketflow.com");
         admin.setName("Admin Master");
-        admin.setPassword(defaultPassword);
+        admin.setPassword(passwordEncoder.encode("admin@demo123"));
         admin.setRole(Role.ADMIN);
 
         User client = new User();
         client.setEmail("client-test@ticketflow.com");
         client.setName("Client test");
-        client.setPassword(defaultPassword);
+        client.setPassword(passwordEncoder.encode("ticket@demo123"));
         client.setRole(Role.CLIENT);
 
         User support = new User();
         support.setEmail("support-test@ticketflow.com");
         support.setName("João suporte");
-        support.setPassword(defaultPassword);
+        support.setPassword(passwordEncoder.encode("sup@demo123"));
         support.setRole(Role.SUPPORT);
 
         userRepository.saveAll(List.of(admin, client, support));
