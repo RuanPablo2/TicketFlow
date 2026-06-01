@@ -50,7 +50,7 @@ public class TicketService {
         ticket.setClient(client);
 
         long openTickets = ticketRepository.countByClientIdAndStatusNot(clientId, TicketStatus.RESOLVED);
-        if (openTickets >= 3) {
+        if (openTickets >= 5) {
             throw new BusinessRuleException(
                     "You have reached the limit of open tickets. Please wait for support to resolve your current requests.",
                     ErrorCode.BUSINESS_RULE_VIOLATION
@@ -131,7 +131,7 @@ public class TicketService {
     }
 
     @Transactional
-    public Ticket updateTicketStatus(Long ticketId, TicketStatus newStatus) { // <- Limpo!
+    public Ticket updateTicketStatus(Long ticketId, TicketStatus newStatus) {
         Ticket ticket = findById(ticketId);
 
         if (ticket.getStatus() == TicketStatus.RESOLVED && newStatus != TicketStatus.OPEN) {
@@ -160,7 +160,7 @@ public class TicketService {
     }
 
     @Transactional
-    public Ticket updateTicketPriority(Long ticketId, TicketPriority newPriority) { // <- Limpo!
+    public Ticket updateTicketPriority(Long ticketId, TicketPriority newPriority) {
         Ticket ticket = findById(ticketId);
 
         if (ticket.getStatus() == TicketStatus.RESOLVED) {
